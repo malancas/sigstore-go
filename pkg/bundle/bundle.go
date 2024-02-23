@@ -15,13 +15,11 @@
 package bundle
 
 import (
-	"bytes"
 	"crypto/x509"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
-	"runtime"
 	"strings"
 
 	"github.com/secure-systems-lab/go-securesystemslib/dsse"
@@ -99,16 +97,28 @@ func LoadJSONFromPath(path string) (*ProtobufBundle, error) {
 	var bundle ProtobufBundle
 	bundle.Bundle = new(protobundle.Bundle)
 
-	contents, err := os.ReadFile(path)
+	// contents, err := os.ReadFile(path)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// if runtime.GOOS == "windows" {
+	// 	contents = bytes.ReplaceAll(contents, []byte("\r\n"), []byte("\n"))
+	// }
+
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var d []byte
+	_, err = file.Read(d)
 	if err != nil {
 		return nil, err
 	}
 
-	if runtime.GOOS == "windows" {
-		contents = bytes.ReplaceAll(contents, []byte("\r\n"), []byte("\n"))
-	}
-
-	err = bundle.UnmarshalJSON(contents)
+	err = bundle.UnmarshalJSON(d)
 	if err != nil {
 		return nil, err
 	}
