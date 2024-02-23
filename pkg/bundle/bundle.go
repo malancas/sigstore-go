@@ -15,13 +15,14 @@
 package bundle
 
 import (
+	"bytes"
 	"crypto/x509"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"runtime"
+	"strings"
 
 	"github.com/secure-systems-lab/go-securesystemslib/dsse"
 	protobundle "github.com/sigstore/protobuf-specs/gen/pb-go/bundle/v1"
@@ -104,7 +105,7 @@ func LoadJSONFromPath(path string) (*ProtobufBundle, error) {
 	}
 
 	if runtime.GOOS == "windows" {
-		contents = []byte(strings.ReplaceAll(string(contents), "\r\n", "\n"))
+		contents = bytes.ReplaceAll(contents, []byte("\r\n"), []byte("\n"))
 	}
 
 	err = bundle.UnmarshalJSON(contents)
